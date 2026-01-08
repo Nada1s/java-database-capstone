@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 
 @Entity
-@Table(name = "doctors")
+@Table(name = "doctor")
 public class Doctor {
 
 @Id
