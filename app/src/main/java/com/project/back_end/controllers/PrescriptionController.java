@@ -45,7 +45,7 @@ public class PrescriptionController {
     @GetMapping("/{id}")
     public ResponseEntity<?> getPrescriptionById(@PathVariable String id) {
         return prescriptionService.getPrescriptionById(id)
-                .map(ResponseEntity::ok)
+                .<ResponseEntity<?>>map(prescription -> ResponseEntity.ok(prescription))
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .body(Map.of("error", "Prescription not found")));
     }

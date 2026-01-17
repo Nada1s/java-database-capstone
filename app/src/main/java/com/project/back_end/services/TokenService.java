@@ -37,7 +37,7 @@ public class TokenService {
 
     public String generateToken(String identifier) {
         Date now = new Date();
-        Date expiryDate = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000L); // 7 days
+        Date expiryDate = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000L);
 
         return Jwts.builder()
                 .setSubject(identifier)
@@ -49,9 +49,9 @@ public class TokenService {
 
     public String extractIdentifier(String token) {
         try {
-           
             return Jwts.parser()
                     .setSigningKey(getSigningKey())
+                    .build()
                     .parseClaimsJws(token)
                     .getBody()
                     .getSubject();
@@ -61,23 +61,38 @@ public class TokenService {
     }
 
     public boolean validateToken(String token, String userRole) {
-        String identifier = extractIdentifier(token);
-        if (identifier == null) {
+        try {
+            String identifier = extractIdentifier(token);
+            if (identifier == null) {
+                return false;
+            }
+
+            switch (userRole.toLowerCase()) {
+                case "admin":
+                    return adminRepository.findByUsername(identifier) != null;
+                case "doctor":
+                    return doctorRepository.findByEmail(identifier) != null;
+                case "patient":
+                    return patientRepository.findByEmail(identifier) != null;
+                default:
+                    return false;
+            }
+        } catch (Exception e) {
             return false;
         }
+    }
 
-        switch (userRole.toLowerCase()) {
-            case "admin":
-                Admin admin = adminRepository.findByUsername(identifier);
-                return admin != null;
-            case "doctor":
-                Doctor doctor = doctorRepository.findByEmail(identifier);
-                return doctor != null;
-            case "patient":
-                Patient patient = patientRepository.findByEmail(identifier);
-                return patient != null;
-            default:
-                return false;
+    public String getEmailFromToken(String token) {
+        return extractIdentifier(token);
+    }
+
+    public Long getUserIdFromToken(String token) {
+        String subject = extractIdentifier(token);
+        if (subject == null) return null;
+        try {
+            return Long.parseLong(subject);
+        } catch (NumberFormatException ex) {
+            return null;
         }
     }
 

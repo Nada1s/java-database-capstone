@@ -9,12 +9,12 @@ import com.project.back_end.repo.DoctorRepository;
 import com.project.back_end.repo.PatientRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
+
 
 import java.util.HashMap;
 import java.util.Map;
 
-@Service
+@org.springframework.stereotype.Service
 public class Service {
 
     private final TokenService tokenService;
